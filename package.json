@@ -1,0 +1,32 @@
+{
+  "name": "johnnies-poker",
+  "version": "0.1.0",
+  "description": "Minimalist real-time Planning Poker",
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start"
+  },
+  "dependencies": {
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.15.0",
+    "@solidjs/start": "^1.1.0",
+    "solid-js": "^1.9.0",
+    "vinxi": "^0.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vanilla-extract/css": "^1.14.0",
+    "@vanilla-extract/recipes": "^0.5.0",
+    "@vanilla-extract/sprinkles": "^1.6.0",
+    "@vanilla-extract/vite-plugin": "^4.0.0",
+    "typescript": "^5.4.0"
+  },
+  "overrides": {
+    "vite": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
