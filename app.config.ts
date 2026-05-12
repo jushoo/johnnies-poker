@@ -3,9 +3,17 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
 export default defineConfig({
   server: {
-    preset: "node-server",
+    experimental: {
+      websocket: true,
+    },
   },
   vite: {
     plugins: [vanillaExtractPlugin()],
   },
+}).addRouter({
+  name: "ws",
+  type: "http",
+  handler: "./src/ws.ts",
+  target: "server",
+  base: "/ws",
 });

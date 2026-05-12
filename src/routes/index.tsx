@@ -1,5 +1,5 @@
-import { createSignal } from "solid-js";
-import { useNavigate } from "@solidjs/router";
+import { createSignal, onMount } from "solid-js";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Button } from "~/components/ui/Button";
 import { Card } from "~/components/ui/Card";
 import { Input } from "~/components/ui/Input";
@@ -16,10 +16,24 @@ function generateRoomCode() {
 
 export default function Home() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [joinCode, setJoinCode] = createSignal("");
   const [name, setName] = createSignal("");
 
+  onMount(() => {
+    const savedName = sessionStorage.getItem("johnnies-poker-name");
+    if (savedName) {
+      setName(savedName);
+    }
+    const redirect = searchParams.redirect;
+    if (redirect) {
+      const code = redirect.replace(/^\//, "").toUpperCase();
+      setJoinCode(code);
+    }
+  });
+
   const handleCreate = () => {
+    sessionStorage.setItem("johnnies-poker-name", name().trim());
     const code = generateRoomCode();
     navigate(`/${code}`);
   };
@@ -28,6 +42,7 @@ export default function Home() {
     e.preventDefault();
     const code = joinCode().trim().toUpperCase();
     if (code && name().trim()) {
+      sessionStorage.setItem("johnnies-poker-name", name().trim());
       navigate(`/${code}`);
     }
   };
@@ -80,7 +95,7 @@ export default function Home() {
             />
           </div>
 
-          <Button onClick={handleCreate} size="lg" fullWidth>
+          <Button onClick={handleCreate} size="lg" fullWidth disabled={!name().trim()}>
             Create new room
           </Button>
 
