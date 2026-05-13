@@ -75,39 +75,26 @@ src/
 
 ## Deployment
 
-### Cloudflare Workers + Durable Objects (Recommended)
+### Dokploy (Docker on VPS)
 
-This app is configured to run on **Cloudflare Workers** with a **Durable Object** for persistent WebSocket room state.
+The easiest way to deploy is with **Dokploy** (or any Docker-based PaaS).
 
-1. **Authenticate with Cloudflare** (one-time):
-   ```bash
-   npx wrangler login
-   ```
+1. Push this repo to GitHub.
+2. In Dokploy, create a new **Application** → link your GitHub repo.
+3. Set the **Build Type** to `Dockerfile`.
+4. Set the **Port** to `3000`.
+5. Enable HTTPS and hit **Deploy**.
 
-2. **Build**:
-   ```bash
-   npm run build
-   ```
+Dokploy will build the image and run the container. The `Dockerfile` in this repo handles the build and runtime.
 
-3. **Deploy**:
-   ```bash
-   npx wrangler deploy
-   ```
-
-The `cloudflare-durable` Nitro preset routes all traffic (HTTP + WebSocket) through a single Durable Object instance, so room state survives Worker restarts.
-
-> **Note:** The first deploy will create the Durable Object binding. If you see a migration error, run `npx wrangler d1 migrations apply` or check the [Durable Object migration docs](https://developers.cloudflare.com/durable-objects/reference/durable-objects-migrations/).
-
-### Local Preview
+### Self-hosted (Node.js directly)
 
 ```bash
 npm run build
-npx wrangler dev .output/server/index.mjs --assets .output/public
+node .output/server/index.mjs
 ```
 
-### Self-hosted (Node.js)
-
-If you prefer to self-host, see [`NEXT_STEPS.md`](./NEXT_STEPS.md) for a VPS deployment checklist (PM2, reverse proxy, HTTPS).
+The server runs on port `3000` by default. Use a reverse proxy (Nginx/Caddy) for HTTPS. See [`NEXT_STEPS.md`](./NEXT_STEPS.md) for a detailed checklist.
 
 ## License
 
