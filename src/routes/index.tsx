@@ -67,7 +67,7 @@ export default function Home() {
             "margin-bottom": vars.space.sm,
           }}
         >
-          Johnny's Poker
+          Johnnie's Poker
         </h1>
         <p style={{ "font-size": vars.fontSize.base }}>
           Minimalist planning poker for agile teams
