@@ -75,7 +75,39 @@ src/
 
 ## Deployment
 
-See [`NEXT_STEPS.md`](./NEXT_STEPS.md) for a detailed deployment checklist including PM2, reverse proxy (Nginx/Caddy), and HTTPS configuration.
+### Cloudflare Workers + Durable Objects (Recommended)
+
+This app is configured to run on **Cloudflare Workers** with a **Durable Object** for persistent WebSocket room state.
+
+1. **Authenticate with Cloudflare** (one-time):
+   ```bash
+   npx wrangler login
+   ```
+
+2. **Build**:
+   ```bash
+   npm run build
+   ```
+
+3. **Deploy**:
+   ```bash
+   npx wrangler deploy
+   ```
+
+The `cloudflare-durable` Nitro preset routes all traffic (HTTP + WebSocket) through a single Durable Object instance, so room state survives Worker restarts.
+
+> **Note:** The first deploy will create the Durable Object binding. If you see a migration error, run `npx wrangler d1 migrations apply` or check the [Durable Object migration docs](https://developers.cloudflare.com/durable-objects/reference/durable-objects-migrations/).
+
+### Local Preview
+
+```bash
+npm run build
+npx wrangler dev .output/server/index.mjs --assets .output/public
+```
+
+### Self-hosted (Node.js)
+
+If you prefer to self-host, see [`NEXT_STEPS.md`](./NEXT_STEPS.md) for a VPS deployment checklist (PM2, reverse proxy, HTTPS).
 
 ## License
 

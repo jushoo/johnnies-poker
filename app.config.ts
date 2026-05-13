@@ -3,6 +3,7 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
 export default defineConfig({
   server: {
+    preset: "cloudflare-durable",
     experimental: {
       websocket: true,
     },
