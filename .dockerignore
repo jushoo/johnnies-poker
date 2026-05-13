@@ -1,0 +1,10 @@
+node_modules
+.git
+.vinxi
+.output
+Dockerfile
+README.md
+NEXT_STEPS.md
+.env
+.env.local
+*.md
