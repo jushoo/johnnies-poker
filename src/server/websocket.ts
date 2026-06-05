@@ -12,6 +12,7 @@ export interface ServerRoom {
   currentIssue: string;
   votesRevealed: boolean;
   votes: Map<string, string>; // memberId -> raw vote value
+  history: RoundHistoryEntry[];
 }
 
 export interface ServerMember {
@@ -19,6 +20,20 @@ export interface ServerMember {
   name: string;
   isSpectator: boolean;
   peer: Peer;
+}
+
+interface VoteStats {
+  average: number | null;
+  median: number | null;
+  mode: string | null;
+  agreement: number;
+}
+
+export interface RoundHistoryEntry {
+  issue: string;
+  votes: Array<{ memberId: string; name: string; value: string }>;
+  stats: VoteStats | null;
+  completedAt: number;
 }
 
 interface PeerContext {
@@ -37,6 +52,7 @@ export function getOrCreateRoom(roomId: string): ServerRoom {
       currentIssue: "",
       votesRevealed: false,
       votes: new Map(),
+      history: [],
     });
   }
   return rooms.get(roomId)!;
@@ -178,6 +194,7 @@ export function handleMessage(peer: Peer, rawMessage: string) {
                   })
                 : [],
               stats: room.votesRevealed ? calculateStats(room) : null,
+              history: room.history,
             },
           })
         );
@@ -239,12 +256,29 @@ export function handleMessage(peer: Peer, rawMessage: string) {
         const memberId = ctx.memberId;
         if (!memberId || !room.members.has(memberId)) break;
 
+        // Archive current round if there were any votes
+        let historyEntry = null;
+        if (room.votes.size > 0) {
+          const stats = room.votesRevealed ? calculateStats(room) : null;
+          const votes = Array.from(room.votes.entries()).map(([mid, value]) => {
+            const m = room.members.get(mid);
+            return { memberId: mid, name: m?.name || "", value };
+          });
+          historyEntry = {
+            issue: room.currentIssue,
+            votes,
+            stats,
+            completedAt: Date.now(),
+          };
+          room.history.push(historyEntry);
+        }
+
         room.votes.clear();
         room.votesRevealed = false;
 
         broadcast(room, {
           type: "round_reset",
-          payload: {},
+          payload: { historyEntry },
         });
         break;
       }

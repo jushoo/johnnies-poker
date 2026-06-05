@@ -8,6 +8,7 @@ import { MemberList } from "~/components/MemberList";
 import { PokerHand } from "~/components/PokerHand";
 import { VoteResults } from "~/components/VoteResults";
 import { RoomControls } from "~/components/RoomControls";
+import { VotingHistory } from "~/components/VotingHistory";
 
 function CopyLinkButton() {
   const [copied, setCopied] = createSignal(false);
@@ -103,6 +104,7 @@ export default function Room() {
         const p = msg.payload as any;
         store.setMembers(p.members || []);
         store.setIssue(p.currentIssue || "");
+        store.setHistory(p.history || []);
         if (p.votesRevealed && p.votes) {
           store.setRevealed(p.votes, p.stats);
         } else {
@@ -135,6 +137,10 @@ export default function Room() {
         break;
       }
       case "round_reset": {
+        const p = msg.payload as any;
+        if (p.historyEntry) {
+          store.addHistoryEntry(p.historyEntry);
+        }
         store.resetRound();
         break;
       }
@@ -256,6 +262,8 @@ export default function Room() {
           onReveal={handleReveal}
           onReset={handleReset}
         />
+
+        <VotingHistory history={store.state.history} />
       </Show>
     </main>
   );
