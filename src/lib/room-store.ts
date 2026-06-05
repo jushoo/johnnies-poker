@@ -21,6 +21,13 @@ export interface VoteStats {
   agreement: number;
 }
 
+export interface RoundHistoryEntry {
+  issue: string;
+  votes: VoteEntry[];
+  stats: VoteStats | null;
+  completedAt: number;
+}
+
 export interface RoomState {
   roomId: string;
   members: Member[];
@@ -29,6 +36,7 @@ export interface RoomState {
   myVote: string | null;
   votes: VoteEntry[];
   stats: VoteStats | null;
+  history: RoundHistoryEntry[];
 }
 
 export function createRoomStore(initialRoomId: string) {
@@ -40,6 +48,7 @@ export function createRoomStore(initialRoomId: string) {
     myVote: null,
     votes: [],
     stats: null,
+    history: [],
   });
 
   const [connected, setConnected] = createSignal(false);
@@ -82,6 +91,14 @@ export function createRoomStore(initialRoomId: string) {
     setState("currentIssue", issue);
   }
 
+  function addHistoryEntry(entry: RoundHistoryEntry) {
+    setState("history", (prev) => [...prev, entry]);
+  }
+
+  function setHistory(entries: RoundHistoryEntry[]) {
+    setState("history", entries);
+  }
+
   function setMembers(members: Member[]) {
     setState("members", members);
   }
@@ -99,5 +116,7 @@ export function createRoomStore(initialRoomId: string) {
     resetRound,
     setIssue,
     setMembers,
+    addHistoryEntry,
+    setHistory,
   };
 }
